@@ -4,6 +4,14 @@ import pty
 import os
 import threading
 import argparse
+import logging
+
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# Set the file to save to
+log_file = 'ledlang-test.log'
+handler = logging.FileHandler(log_file)
+handler.setLevel(logging.DEBUG)
 
 # ANSI color codes for terminal output
 WHITE = "\033[47m  \033[0m"
@@ -85,7 +93,7 @@ def main():
     threading.Thread(target=simulator.run, daemon=True).start()
 
     with serial.Serial(slave_name, 115200, timeout=1) as ser:
-        print(f"Listening on {slave_name} at 115200 baud...")
+        logging.info(f"Listening on {slave_name} at 115200 baud...")
 
         LED = LEDLang(ser)
         LED.set_folder(args.folder)
