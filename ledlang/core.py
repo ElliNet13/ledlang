@@ -321,7 +321,7 @@ class LEDLang:
                     letter_bitmap = self.get_letter_bitmap(text)
                     for y, row in enumerate(letter_bitmap):
                         for x, pixel in enumerate(row):
-                            if pixel == '#' and x < width and y < height:
+                            if pixel == '1' and x < width and y < height:
                                 rx, ry = self.rotate_point(x, y, rotation)
                                 cmds.append({'cmd':'PLOT', 'x': rx, 'y': ry})
                     cmds.append({'cmd':'WAIT', 'sec': 1})
@@ -332,7 +332,7 @@ class LEDLang:
                         cmds.append({'cmd':'CLEAR'})
                         for y in range(height):
                             for x in range(width):
-                                if full_bitmap[y][x + offset] == '#':
+                                if full_bitmap[y][x + offset] == '1':
                                     rx, ry = self.rotate_point(x, y, rotation)
                                     cmds.append({'cmd':'PLOT', 'x': rx, 'y': ry})
                         cmds.append({'cmd':'WAIT', 'sec': 0.3})
