@@ -89,4 +89,4 @@ def main():
 
         LED = LEDLang(ser)
         LED.set_folder(args.folder)
-        LED.playfile(args.animation + '.led')
+        LED.playfile(args.animation)
