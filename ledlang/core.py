@@ -94,7 +94,6 @@ class LEDLang:
         self.funcs = {}
 
     def send(self, command):
-        print(">>", command.strip())
         self.ser.write((command.strip() + "\r\n").encode())
         self.ser.flush()
         time.sleep(0.01)
