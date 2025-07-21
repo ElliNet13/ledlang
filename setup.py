@@ -13,4 +13,5 @@ setup(
             'ledlang = ledlang.LEDLangTesting:main',
         ],
     },
+    license="MIT",
 )
