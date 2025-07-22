@@ -1,4 +1,4 @@
-from .core import LEDLang
+import .core
 import serial
 import pty
 import os
@@ -88,7 +88,7 @@ class LEDDeviceSimulator:
 
 def main():
     parser = argparse.ArgumentParser(description="LEDLang Tester.")
-    parser.add_argument("folder", help="Folder that contains the LEDLang files.")
+    parser.add_argument("--folder", help="Folder that contains the LEDLang files. Defaults to the libs tests folder.", default=os.path.dirname(core.__file__))
     parser.add_argument("animation", help="The file to play, without the .led extension.")
     parser.add_argument("--size", help="The size of the grid to use (e.g., 5x5).", default="5x5")
     args = parser.parse_args()
@@ -104,7 +104,7 @@ def main():
     with serial.Serial(slave_name, 115200, timeout=1) as ser:
         logging.info(f"Listening on {slave_name} at 115200 baud...")
 
-        LED = LEDLang(ser)
+        LED = core.LEDLang(ser)
         LED.set_folder(args.folder)
         LED.playfile(args.animation)
 
