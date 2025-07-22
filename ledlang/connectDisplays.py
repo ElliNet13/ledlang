@@ -17,7 +17,7 @@ class SingleDisplayToMulti:
     def __init__(self, master_fd, displays: Displays):
         self.master_fd = master_fd
         self.displays = displays
-        size_str = self.displays.size.lower()
+        size_str = self.displays["size"].lower()
         self.width, self.height = map(int, size_str.split('x'))
 
     def run(self):
@@ -39,7 +39,7 @@ class SingleDisplayToMulti:
         cmd = parts[0].upper()
 
         if cmd == "CLEAR":
-            for disp in self.displays.displays:
+            for disp in self.displays["displays"]:
                 disp['serial'].write(b"CLEAR\n")
             return
 
@@ -61,10 +61,10 @@ class SingleDisplayToMulti:
             display_index = x // self.width
             local_x = x % self.width
 
-            if display_index >= len(self.displays.displays):
+            if display_index >= len(self.displays["displays"]):
                 return  # x out of all displays range
 
-            disp = self.displays.displays[display_index]
+            disp = self.displays["displays"][display_index]
             rotation = disp.get('rotation', 0) % 360  # Normalize rotation
 
             # Apply rotation
