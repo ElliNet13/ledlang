@@ -2,8 +2,10 @@ name: Publish to PyPI
 
 on:
   push:
+    branches:
+      - main
     tags:
-      - "v*.*.*"  # Trigger only on version tags like v1.0.0
+      - "v*.*.*"
   workflow_dispatch:
 
 permissions:
@@ -28,6 +30,25 @@ jobs:
           python -m pip install --upgrade pip
           pip install build twine
           pip install -r requirements.txt
+
+      - name: Determine version
+        id: get-version
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            # Use tag version (e.g. v1.2.3)
+            VERSION="${GITHUB_REF#refs/tags/v}"
+          else
+            # Create a dev version like 1.2.3.dev20250722.153000
+            BASE_VERSION=$(grep -oP "(?<=^version = \")\d+\.\d+\.\d+" pyproject.toml)
+            VERSION="${BASE_VERSION}.dev$(date -u +%Y%m%d.%H%M%S)"
+          fi
+
+          echo "Using version: $VERSION"
+          echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Set version in pyproject.toml
+        run: |
+          sed -i "s/^version = \".*\"/version = \"${{ env.PACKAGE_VERSION }}\"/" pyproject.toml
 
       - name: Build the package
         run: python -m build
