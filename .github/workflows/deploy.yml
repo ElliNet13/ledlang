@@ -34,13 +34,20 @@ jobs:
       - name: Determine version
         id: get-version
         run: |
-          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-            # Use tag version (e.g. v1.2.3)
+          # Get base version from pyproject.toml (assumes format X.Y.Z)
+          BASE_VERSION=$(grep -oP '(?<=^version = ")[^"]+' pyproject.toml)
+
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            # On tag: use tag version without the "v"
             VERSION="${GITHUB_REF#refs/tags/v}"
           else
-            # Create a dev version like 1.2.3.dev20250722153000
-            BASE_VERSION=$(grep -oP "(?<=^version = \")\d+\.\d+\.\d+" pyproject.toml)
-            VERSION="${BASE_VERSION}.dev$(date -u +%Y%m%d%H%M%S)"
+            # On branch (dev build): increment patch version by 1
+            IFS='.' read -r MAJOR MINOR PATCH <<< "$BASE_VERSION"
+            PATCH=$((PATCH + 1))
+            BUMPED_VERSION="$MAJOR.$MINOR.$PATCH"
+            # Append dev timestamp with no dots (PEP440 compliant)
+            DEV_SUFFIX=".dev$(date -u +%Y%m%d%H%M%S)"
+            VERSION="$BUMPED_VERSION$DEV_SUFFIX"
           fi
 
           echo "Using version: $VERSION"
