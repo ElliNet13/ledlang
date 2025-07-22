@@ -11,3 +11,8 @@ LED Programming Language, mostly for controlling a Micro:bit but others can be u
 |----------|---------------------------------|
 | PLOT     | Turn on a pixel on the screen   |
 | CLEAR    | Clear the screen                |
+
+# Problems
+| Item     | Problem                                         |
+|----------|-------------------------------------------------|
+| TEXT     | Only works if the height of your display is 5   |

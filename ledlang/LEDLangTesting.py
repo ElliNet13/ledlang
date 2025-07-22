@@ -18,14 +18,22 @@ WHITE = "\033[47m  \033[0m"
 RED = "\033[41m  \033[0m"
 
 class LEDDeviceSimulator:
-    def __init__(self, master_fd):
+    def __init__(self, master_fd, size="5x5"):
         self.master_fd = master_fd
-        self.grid_size = 5
-        self.grid = [['WHITE' for _ in range(self.grid_size)] for _ in range(self.grid_size)]
+        # Parse size string "WxH" into integers
+        try:
+            width_str, height_str = size.lower().split('x')
+            self.width = int(width_str)
+            self.height = int(height_str)
+        except Exception:
+            # Fallback to 5x5 if parse fails
+            self.width = 5
+            self.height = 5
+        self.grid = [['WHITE' for _ in range(self.width)] for _ in range(self.height)]
 
     def print_grid(self):
         os.system('clear')  # clear terminal screen on update (Linux/macOS)
-        print("5x5 LED Grid (WHITE = empty, RED = lit):")
+        print(f"{self.width}x{self.height} LED Grid (WHITE = empty, RED = lit):")
         for row in self.grid:
             line = ''
             for color in row:
@@ -37,11 +45,11 @@ class LEDDeviceSimulator:
         print("\nWaiting for commands...")
 
     def set_pixel(self, x, y, color):
-        if 0 <= x < self.grid_size and 0 <= y < self.grid_size:
+        if 0 <= x < self.width and 0 <= y < self.height:
             self.grid[y][x] = color
 
     def clear_grid(self):
-        self.grid = [['WHITE' for _ in range(self.grid_size)] for _ in range(self.grid_size)]
+        self.grid = [['WHITE' for _ in range(self.width)] for _ in range(self.height)]
 
     def run(self):
         with os.fdopen(self.master_fd, 'rb+', buffering=0) as master:
@@ -82,6 +90,7 @@ def main():
     parser = argparse.ArgumentParser(description="LEDLang Tester.")
     parser.add_argument("folder", help="Folder that contains the LEDLang files.")
     parser.add_argument("animation", help="The file to play, without the .led extension.")
+    parser.add_argument("--size", help="The size of the grid to use (e.g., 5x5).", default="5x5")
     args = parser.parse_args()
 
     # Setup virtual serial port pair
@@ -89,7 +98,7 @@ def main():
     slave_name = os.ttyname(slave_fd)
 
     # Start the device simulator in a thread
-    simulator = LEDDeviceSimulator(master_fd)
+    simulator = LEDDeviceSimulator(master_fd, args.size)
     threading.Thread(target=simulator.run, daemon=True).start()
 
     with serial.Serial(slave_name, 115200, timeout=1) as ser:
@@ -98,3 +107,6 @@ def main():
         LED = LEDLang(ser)
         LED.set_folder(args.folder)
         LED.playfile(args.animation)
+
+if __name__ == "__main__":
+    main()
