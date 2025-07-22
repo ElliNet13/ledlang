@@ -440,7 +440,7 @@ class LEDLang:
 
     def send(self, command):
         baud = self.ser.baudrate
-        length = len(c) + 1
+        length = len(command.stripe()) + 2
         tx_time = (length * 10) / baud
         proc_time = 0.015 if c.strip().upper().startswith("CLEAR") else 0.003 if c.strip().upper().startswith("PLOT") else 0.005
         total = tx_time + proc_time
