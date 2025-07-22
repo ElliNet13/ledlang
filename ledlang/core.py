@@ -498,12 +498,14 @@ class LEDLang:
                 size = re.findall(r"(\d+)x(\d+)", line)
                 if size:
                     width, height = map(int, size[0])
+                    self.real_width, self.real_height = map(int, size[0])
                     cmds.append({'cmd':'CLEAR'})
 
             elif line.startswith("REALSIZE"):
                 size = re.findall(r"(\d+)x(\d+)", line)
                 if size:
                     self.real_width, self.real_height = map(int, size[0])
+                    cmds.append({'cmd':'CLEAR'})
 
 
             elif line.startswith("CLEAR"):
