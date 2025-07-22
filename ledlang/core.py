@@ -435,6 +435,8 @@ class LEDLang:
         self.folder = None
         self.compiled = {}
         self.funcs = {}
+        self.real_width = self.width 
+        self.real_height = self.height
 
     def send(self, command):
         self.ser.write((command.strip() + "\r\n").encode())
@@ -497,6 +499,12 @@ class LEDLang:
                 if size:
                     width, height = map(int, size[0])
                     cmds.append({'cmd':'CLEAR'})
+
+            elif line.startswith("REALSIZE"):
+                size = re.findall(r"(\d+)x(\d+)", line)
+                if size:
+                    self.real_width, self.real_height = map(int, size[0])
+
 
             elif line.startswith("CLEAR"):
                 cmds.append({'cmd':'CLEAR'})
@@ -684,13 +692,20 @@ class LEDLang:
         return cmds
     def play(self, obj):
         cmds = obj
+        scale_x = max(1, self.real_width // self.width)
+        scale_y = max(1, self.real_height // self.height)
         for c in cmds:
             logging.debug("Sending command: %s", c)
             if isinstance(c, dict) and 'cmd' in c:
                 if c['cmd'] == 'CLEAR':
                     self.send('CLEAR')
                 elif c['cmd'] == 'PLOT':
-                    self.send(f"PLOT {c['x']} {c['y']}")
+                    base_x, base_y = c['x'], c['y']
+                    for dx in range(scale_x):
+                        for dy in range(scale_y):
+                            sx = base_x * scale_x + dx
+                            sy = base_y * scale_y + dy
+                            self.send(f"PLOT {sx} {sy}")
                 elif c['cmd'] == 'WAIT':
                     time.sleep(c['sec'])
             else:

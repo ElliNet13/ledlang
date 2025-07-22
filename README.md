@@ -13,6 +13,11 @@ LED Programming Language, mostly for controlling a Micro:bit but others can be u
 | CLEAR    | Clear the screen                |
 
 # Problems
-| Item     | Problem                                         |
-|----------|-------------------------------------------------|
-| TEXT     | Only works if the height of your display is 5   |
+| Item     | Problem                                                                                        |
+|----------|------------------------------------------------------------------------------------------------|
+| TEXT     | Only works if the height of your display is 5, you can get around this bug by using REALSIZE   |
+
+# Notes
+| Item         | Problem                                     |
+|--------------|---------------------------------------------|
+| REALSIZE     | Can lag since division is used every PLOT   |
