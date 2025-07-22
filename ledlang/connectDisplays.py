@@ -99,9 +99,9 @@ class SingleDisplayToMulti:
 
 # Modify LEDLang class
 class MultiLEDLang(LEDLang):
-    def __init__(self, displays: Displays):
+    def __init__(self, displays: Displays, wait=True):
         master_fd, slave_fd = pty.openpty()
         self.slave_name = os.ttyname(slave_fd)
         self.multi = SingleDisplayToMulti(master_fd, displays)
-        super().__init__(serial.Serial(self.slave_name, 115200))
+        super().__init__(serial.Serial(self.slave_name, 115200), wait)
         threading.Thread(target=self.multi.run, daemon=True).start()

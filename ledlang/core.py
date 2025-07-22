@@ -428,7 +428,7 @@ def bresenham_line(x0, y0, x1, y1):
     return points
 
 class LEDLang:
-    def __init__(self, serial_obj):
+    def __init__(self, serial_obj, wait=True):
         self.ser = serial_obj
         self.width = 5
         self.height = 5
@@ -437,6 +437,7 @@ class LEDLang:
         self.funcs = {}
         self.real_width = self.width 
         self.real_height = self.height
+        self.wait = wait
 
     def send(self, command):
         baud = self.ser.baudrate
@@ -449,7 +450,9 @@ class LEDLang:
 
         self.ser.write((command.strip() + "\r\n").encode())
         self.ser.flush()
-        time.sleep(total)
+        if self.wait:
+            logging.debug("About to wait for %ss", total)
+            time.sleep(total)
 
     def normalize_rotation(self, angle):
         angle = angle % 360
