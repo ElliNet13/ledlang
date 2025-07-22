@@ -444,8 +444,8 @@ class LEDLang:
         tx_time = (length * 10) / baud
         proc_time = 0.015 if command.strip().upper().startswith("CLEAR") else 0.003 if command.strip().upper().startswith("PLOT") else 0.005
         total = tx_time + proc_time
-        if total > 0.01:
-            logging.warning(f"Wait time {total:.4f}s for command '{command}' exceeds 0.01 seconds")
+        if total > 0.02:
+            logging.warning(f"Wait time {total:.4f}s for command '{command}' exceeds 0.02 seconds")
 
         self.ser.write((command.strip() + "\r\n").encode())
         self.ser.flush()
