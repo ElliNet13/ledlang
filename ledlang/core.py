@@ -471,6 +471,9 @@ class LEDLang:
             return w - 1 - x, h - 1 - y
         elif angle == 270:
             return y, w - 1 - x
+        else:
+            logging.warning("Unsupported rotation angle: %s", angle)
+            return x, y
 
     def set_folder(self, folder_path):
         if not os.path.isdir(folder_path):
