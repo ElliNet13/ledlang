@@ -438,7 +438,6 @@ class LEDLang:
         self.real_width = self.width 
         self.real_height = self.height
         self.wait = wait
-        self.rotation = 0
 
     def send(self, command):
         baud = self.ser.baudrate
@@ -514,7 +513,6 @@ class LEDLang:
                 if size:
                     width, height = map(int, size[0])
                     self.real_width, self.real_height = map(int, size[0])
-                    self.rotation = 0
                     cmds.append({'cmd':'CLEAR'})
 
             elif line.startswith("REALSIZE"):
@@ -536,7 +534,7 @@ class LEDLang:
                         angle = int(parts[1])
                     except:
                         angle = 90
-                self.rotation = self.normalize_rotation(rotation + angle)
+                rotation = self.normalize_rotation(rotation + angle)
                 cmds.append({'cmd':'CLEAR'})
 
             elif line.startswith("PLOT"):
@@ -709,28 +707,26 @@ class LEDLang:
 
         return cmds
     def play(self, obj):
+        cmds = obj
         scale_x = max(1, self.real_width // self.width)
         scale_y = max(1, self.real_height // self.height)
-        for c in obj:
+        for c in cmds:
+            logging.debug("Sending command: %s", c)
             if isinstance(c, dict) and 'cmd' in c:
                 if c['cmd'] == 'CLEAR':
                     self.send('CLEAR')
                 elif c['cmd'] == 'PLOT':
-                    # Rotate coordinates using self.rotation
-                    rx, ry = self.rotate_point(c['x'], c['y'], self.rotation)
-                    # Debug print to verify rotation
-                    logging.debug(f"PLOT original=({c['x']},{c['y']}), rotated=({rx},{ry}), rotation={self.rotation}")
+                    base_x, base_y = c['x'], c['y']
                     for dx in range(scale_x):
                         for dy in range(scale_y):
-                            sx = rx * scale_x + dx
-                            sy = ry * scale_y + dy
+                            sx = base_x * scale_x + dx
+                            sy = base_y * scale_y + dy
                             self.send(f"PLOT {sx} {sy}")
                 elif c['cmd'] == 'WAIT':
                     time.sleep(c['sec'])
             else:
                 logging.warning("Unknown command format: %s", c)
 
-    
     def get_letter_bitmap(self, char):
         base = FONT_5x5.get(char, FONT_5x5['.'])
         if self.width == 5 and self.height == 5:

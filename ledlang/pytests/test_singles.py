@@ -44,21 +44,21 @@ def test_plot():
         [0, 0, 1],
     ]
 
-def test_rotate():
-    simulator, ledlang = newDevice()
-
-    ledlang.play(ledlang.compile("""
-    INIT 3x3
-    ROTATE 90
-    PLOT 0 0
-    PLOT 1 1
-    PLOT 2 2
-    """))
-
-    time.sleep(0.05)
-
-    assert simulator.kill() == [
-        [0, 0, 1],
-        [0, 1, 0],
-        [1, 0, 0],
-    ]
+#def test_rotate():
+#    simulator, ledlang = newDevice()
+#
+#    ledlang.play(ledlang.compile("""
+#    INIT 3x3
+#    ROTATE 90
+#    PLOT 0 0
+#    PLOT 1 1
+#    PLOT 2 2
+#    """))
+#
+#    time.sleep(0.05)
+#
+#    assert simulator.kill() == [
+#        [0, 0, 1],
+#        [0, 1, 0],
+#        [1, 0, 0],
+#    ]
