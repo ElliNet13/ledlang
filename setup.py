@@ -3,7 +3,7 @@ from pathlib import Path
 
 setup(
     name="ledlang",
-    version="0.2.2",
+    version="0.2.3",
     description="A language for controlling LED animations. Other device must support PLOT and CLEAR calls.",
     long_description=(Path(__file__).parent / "README.md").read_text(),
     long_description_content_type="text/markdown",
