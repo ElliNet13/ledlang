@@ -3,7 +3,7 @@ from pathlib import Path
 
 setup(
     name="ledlang",
-    version="0.1.8",
+    version="0.1.9",
     description="A language for controlling LED animations. Other device must support PLOT and CLEAR calls.",
     long_description=(Path(__file__).parent / "README.md").read_text(),
     long_description_content_type="text/markdown",
@@ -18,5 +18,8 @@ setup(
         ],
     },
     license="MIT",
-    url="https://github.com/ElliNet13/ledlang"
+    url="https://github.com/ElliNet13/ledlang",
+    package_data={
+        "ledlang": ["tests/*"],
+    },
 )
