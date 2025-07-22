@@ -439,16 +439,24 @@ class LEDLang:
         self.real_height = self.height
 
     def send(self, command):
+        baud = self.ser.baudrate
+        length = len(c) + 1
+        tx_time = (length * 10) / baud
+        proc_time = 0.015 if c.strip().upper().startswith("CLEAR") else 0.003 if c.strip().upper().startswith("PLOT") else 0.005
+        total = tx_time + proc_time
+        if total > 0.01:
+            logging.warning(f"Wait time {total:.4f}s for command '{c}' exceeds 0.01 seconds")
+
         self.ser.write((command.strip() + "\r\n").encode())
         self.ser.flush()
-        time.sleep(0.01)
+        time.sleep(total)
 
     def normalize_rotation(self, angle):
         angle = angle % 360
         if angle < 0:
             angle += 360
         return angle
-
+    
     def rotate_point(self, x, y, angle):
         w, h = self.width, self.height
         angle = self.normalize_rotation(angle)
