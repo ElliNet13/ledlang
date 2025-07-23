@@ -18,6 +18,7 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://github.com/ElliNet13/ledlang"
+Helper = "https://ellinet13.github.io/to-the-serial/"
 
 [project.scripts]
 ledlang-test = "ledlang.LEDLangTesting:main"
