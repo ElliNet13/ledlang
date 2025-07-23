@@ -106,12 +106,12 @@ latest_job_id, latest_run_id = get_latest_job_id(owner, repo, 'pytest.yml', os.e
 replacements = {
     "markdownFormattedListOfCommits": commit_log,
     "githubRepoLink": github_repo,
-   "badgeForTests": ( 
-        f"![Test Status Badge](https://img.shields.io/badge/dynamic/json?"
-        f"url=https%3A%2F%2Fapi.github.com%2Frepos%2FElliNet13%2Fledlang%2Factions%2Fjobs%2F"
-        f"{latest_job_id}"
-        f"&query=status&logo=github&label=Test%20Status)"
-        f"(https://github.com/ElliNet13/ledlang/actions/runs/{latest_run_id}/job/{latest_run_id})"
+    "badgeForTests": (
+     f"[![Test Status Badge](https://img.shields.io/badge/dynamic/json?"
+     f"url=https%3A%2F%2Fapi.github.com%2Frepos%2FElliNet13%2Fledlang%2Factions%2Fjobs%2F"
+     f"{latest_job_id}"
+     f"&query=status&logo=github&label=Test%20Status)]"
+     f"(https://github.com/ElliNet13/ledlang/actions/runs/{latest_run_id}/job/{latest_job_id})"
     )
 }
 
