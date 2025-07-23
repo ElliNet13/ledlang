@@ -58,6 +58,8 @@ jobs:
           sed -i "s/^version = \".*\"/version = \"${{ env.PACKAGE_VERSION }}\"/" pyproject.toml
 
       - name: Fill fillers
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python3 fillReadme.py
 
