@@ -1,10 +1,11 @@
 name: Publish to PyPI
 
 on:
-  workflow_run:
-    workflows: ["Run Pytest"]
-    types:
-      - completed  # will run whether success or failure
+  push:
+    branches:
+      - main
+    tags:
+      - "v*.*.*"
   workflow_dispatch:
 
 permissions:
@@ -57,8 +58,6 @@ jobs:
           sed -i "s/^version = \".*\"/version = \"${{ env.PACKAGE_VERSION }}\"/" pyproject.toml
 
       - name: Fill fillers
-        env:
-          PREV_WORKFLOW_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
         run: |
           python3 fillReadme.py
 
