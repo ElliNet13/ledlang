@@ -8,9 +8,44 @@ def run_git_command(cmd):
 # Get current commit ID
 commit_id = run_git_command(["git", "rev-parse", "HEAD"])
 
+owner = "ElliNet13"
+repo = "ledlang"
+
 # Define your repo URL here
-github_repo = "https://github.com/ElliNet13/ledlang"
+github_repo = f"https://github.com/{owner}/{repo}"
 commit_link = f"{github_repo}/commit/{commit_id}"
+
+import requests
+
+def get_latest_job_id(owner, repo, workflow_filename, token):
+    headers = {
+        "Authorization": f"token {token}",
+        "Accept": "application/vnd.github+json",
+    }
+
+    # Step 1: Get latest workflow run ID
+    runs_url = f"https://api.github.com/repos/{owner}/{repo}/actions/workflows/{workflow_filename}/runs?per_page=1"
+    runs_resp = requests.get(runs_url, headers=headers)
+    runs_resp.raise_for_status()
+    runs_data = runs_resp.json()
+
+    if not runs_data.get("workflow_runs"):
+        raise Exception("No workflow runs found.")
+
+    latest_run_id = runs_data["workflow_runs"][0]["id"]
+
+    # Step 2: Get jobs for that workflow run
+    jobs_url = f"https://api.github.com/repos/{owner}/{repo}/actions/runs/{latest_run_id}/jobs"
+    jobs_resp = requests.get(jobs_url, headers=headers)
+    jobs_resp.raise_for_status()
+    jobs_data = jobs_resp.json()
+
+    if not jobs_data.get("jobs"):
+        raise Exception("No jobs found in the latest workflow run.")
+
+    # Assuming single job in the run
+    latest_job_id = jobs_data["jobs"][0]["id"]
+    return latest_job_id
 
 def get_current_tag():
     # Try to get the tag of the current commit
@@ -69,6 +104,7 @@ else:
 replacements = {
     "markdownFormattedListOfCommits": commit_log,
     "githubRepoLink": github_repo,
+    "badgeForTests": f"![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2FElliNet13%2Fledlang%2Factions%2Fjobs%2F{get_latest_job_id(owner, repo, "pytest.yml", os.environ["GITHUB_TOKEN"])}&query=status&logo=github&label=Test%20Status)"
 }
 
 # --- Replace in README.md ---

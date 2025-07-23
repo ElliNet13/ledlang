@@ -2,6 +2,7 @@
 [![Publish to PyPI](https://github.com/ElliNet13/ledlang/actions/workflows/deploy.yml/badge.svg)](https://github.com/ElliNet13/ledlang/actions/workflows/deploy.yml)
 ![PyPI - Version](https://img.shields.io/pypi/v/ledlang)
 ![GitHub License](https://img.shields.io/github/license/ElliNet13/ledlang)
+[![Run Pytest](https://github.com/ElliNet13/ledlang/actions/workflows/pytest.yml/badge.svg)](https://github.com/ElliNet13/ledlang/actions/workflows/pytest.yml)
 
 <br>
 LED Programming Language, mostly for controlling a Micro:bit but others can be used.
@@ -24,4 +25,4 @@ LED Programming Language, mostly for controlling a Micro:bit but others can be u
 
 Commits between builds: {{markdownFormattedListOfCommits}}<br>
 [Github repo]({{githubRepoLink}})<br>
-Test Status: [![Run Pytest](https://github.com/ElliNet13/ledlang/actions/workflows/pytest.yml/badge.svg)](https://github.com/ElliNet13/ledlang/actions/workflows/pytest.yml)
+Test Status for this: {{badgeForTests}}
