@@ -32,8 +32,6 @@ else:
 
 # --- Fillers to replace ---
 replacements = {
-    "commitID": commit_id,
-    "commitLink": commit_link,
     "markdownFormattedListOfCommits": commit_log,
     "githubRepoLink": github_repo,
     "testStatus": os.getenv("PREV_WORKFLOW_CONCLUSION")
