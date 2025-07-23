@@ -21,3 +21,7 @@ LED Programming Language, mostly for controlling a Micro:bit but others can be u
 | Item         | Problem                                     |
 |--------------|---------------------------------------------|
 | REALSIZE     | Can lag since division is used every PLOT   |
+
+Commit: [{{commitID}}]({{commitLink}})
+Commits between builds: {{markdownFormattedListOfCommits}}
+[Github repo]({{githubRepoLink}})
