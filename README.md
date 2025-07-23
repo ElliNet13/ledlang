@@ -26,4 +26,5 @@ LED Programming Language, mostly for controlling a Micro:bit but others can be u
 
 Commits between builds: {{markdownFormattedListOfCommits}}<br>
 [Github repo]({{githubRepoLink}})<br>
-Test Status for this: {{badgeForTests}}
+Test Status for this: {{badgeForTests}}<br>
+[View this deploy]({{runLink}})

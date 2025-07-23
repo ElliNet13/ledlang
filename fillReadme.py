@@ -101,18 +101,19 @@ else:
         ])
 
 latest_job_id, latest_run_id = get_latest_job_id(owner, repo, 'pytest.yml', os.environ['GITHUB_TOKEN'])
+latest_job_id_self, latest_run_id_self = get_latest_job_id(owner, repo, 'deploy.yml', os.environ['GITHUB_TOKEN'])
 
 # --- Fillers to replace ---
 replacements = {
-    "markdownFormattedListOfCommits": commit_log,
     "githubRepoLink": github_repo,
     "badgeForTests": (
      f"[![Test Status Badge](https://img.shields.io/badge/dynamic/json?"
-     f"url=https%3A%2F%2Fapi.github.com%2Frepos%2FElliNet13%2Fledlang%2Factions%2Fjobs%2F"
+     f"url=https%3A%2F%2Fapi.github.com%2Frepos%2F{owner}%2F{repo}%2Factions%2Fjobs%2F"
      f"{latest_job_id}"
      f"&query=status&logo=github&label=Test%20Status)]"
-     f"(https://github.com/ElliNet13/ledlang/actions/runs/{latest_run_id}/job/{latest_job_id})"
-    )
+     f"(https://github.com/{owner}/{repo}/actions/runs/{latest_run_id}/job/{latest_job_id})"
+    ),
+    "runLink": f"(https://github.com/{owner}/{repo}/actions/runs/{latest_run_id_self}/job/{latest_job_id_self})",
 }
 
 # --- Replace in README.md ---
