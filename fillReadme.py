@@ -50,7 +50,7 @@ def get_latest_job_id(owner, repo, workflow_filename, token):
 def get_current_tag():
     # Try to get the tag of the current commit
     try:
-        tag = run_git_command(["git", "describe", "--exact-match", "--tags", "HEAD"])
+        tag = run_git_command(["git", "describe", "--tags", "HEAD"])
         return tag
     except subprocess.CalledProcessError:
         return None
