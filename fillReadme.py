@@ -45,7 +45,7 @@ def get_latest_job_id(owner, repo, workflow_filename, token):
 
     # Assuming single job in the run
     latest_job_id = jobs_data["jobs"][0]["id"]
-    return latest_job_id
+    return latest_job_id, latest_run_id
 
 def get_current_tag():
     # Try to get the tag of the current commit
@@ -100,15 +100,18 @@ else:
             "--pretty=format:- [%h](" + github_repo + "/commit/%H): %s"
         ])
 
+latest_job_id, latest_run_id = get_latest_job_id(owner, repo, 'pytest.yml', os.environ['GITHUB_TOKEN'])
+
 # --- Fillers to replace ---
 replacements = {
     "markdownFormattedListOfCommits": commit_log,
     "githubRepoLink": github_repo,
-   "badgeForTests": (
+   "badgeForTests": ( 
         f"![Test Status Badge](https://img.shields.io/badge/dynamic/json?"
         f"url=https%3A%2F%2Fapi.github.com%2Frepos%2FElliNet13%2Fledlang%2Factions%2Fjobs%2F"
-        f"{get_latest_job_id(owner, repo, 'pytest.yml', os.environ['GITHUB_TOKEN'])}"
+        f"{latest_job_id}"
         f"&query=status&logo=github&label=Test%20Status)"
+        f"(https://github.com/ElliNet13/ledlang/actions/runs/{latest_run_id}/job/{latest_run_id})"
     )
 }
 
