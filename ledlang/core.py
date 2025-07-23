@@ -440,16 +440,52 @@ class LEDLang:
         self.wait = wait
 
     def send(self, command):
+        logging.debug("Sending command: %s", command)
+        def encode_bytecode(command):
+            parts = command.strip().upper().split()
+            if not parts:
+                raise ValueError("Empty command")
+
+            if parts[0] == "CLEAR":
+                return bytes([0x02])
+
+            elif parts[0] == "PLOT":
+                if len(parts) != 3:
+                    raise ValueError("PLOT requires 2 arguments")
+                x = int(parts[1])
+                y = int(parts[2])
+                if not (0 <= x <= 4 and 0 <= y <= 4):
+                    raise ValueError("x and y must be between 0 and 4")
+                return bytes([0x01, x, y])
+
+            else:
+                raise ValueError(f"Unknown command: {parts[0]}")
+
+        bytecode = encode_bytecode(command)
+        logging.debug("Sending bytecode: %s", repr(bytecode))
+        bytecodestring = ' '.join(f'{byte:02x}' for byte in bytecode) # We don't truly support hex yet
         baud = self.ser.baudrate
+
+        # We would only use these if we supported real hex
+        #length = len(bytecode)
+        #tx_time = (length * 10) / baud
+        #proc_time = 0.015 if bytecode[0] == 0x02 else 0.003 if bytecode[0] == 0x01 else 0.005
+        #total = tx_time + proc_time
+
         length = len(command.strip()) + 2
         tx_time = (length * 10) / baud
-        proc_time = 0.015 if command.strip().upper().startswith("CLEAR") else 0.003 if command.strip().upper().startswith("PLOT") else 0.005
+
+        proc_time = 0.015 if bytecodestring.strip().upper().startswith("CLEAR") else 0.003 if bytecodestring.strip().upper().startswith("PLOT") else 0.005
         total = tx_time + proc_time
         if total > 0.02:
             logging.warning(f"Wait time {total:.4f}s for command '{command}' exceeds 0.02 seconds")
 
-        self.ser.write((command.strip() + "\r\n").encode())
+        if total > 0.02:
+            logging.warning(f"Wait time {total:.4f}s for command '{command}' exceeds 0.02 seconds")
+
+        self.ser.write(bytecode)
         self.ser.flush()
+
         if self.wait:
             logging.debug("About to wait for %ss", total)
             time.sleep(total)
@@ -711,7 +747,6 @@ class LEDLang:
         scale_x = max(1, self.real_width // self.width)
         scale_y = max(1, self.real_height // self.height)
         for c in cmds:
-            logging.debug("Sending command: %s", c)
             if isinstance(c, dict) and 'cmd' in c:
                 if c['cmd'] == 'CLEAR':
                     self.send('CLEAR')
