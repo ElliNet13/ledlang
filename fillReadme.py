@@ -1,4 +1,5 @@
 import subprocess
+import os
 
 def run_git_command(cmd):
     return subprocess.check_output(cmd, text=True).strip()
@@ -35,6 +36,7 @@ replacements = {
     "commitLink": commit_link,
     "markdownFormattedListOfCommits": commit_log,
     "githubRepoLink": github_repo,
+    "testStatus": os.getenv("PREV_WORKFLOW_CONCLUSION")
 }
 
 # --- Replace in README.md ---
