@@ -26,8 +26,6 @@ LED Programming Language, mostly for controlling a Micro:bit but others can be u
 # TODO
 | What I need to do                                            |
 |--------------------------------------------------------------|
-| Make plot be able to batch |
-| Use a local echo to know if a point is already drawn |
 
 [Github repo]({{githubRepoLink}})<br>
 Test Status for this: {{badgeForTests}}<br>

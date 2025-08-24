@@ -708,32 +708,48 @@ class LEDLang:
 
         return cmds
     def _compileLayerTwo(self, originalCompiled):
-        """Compile code into fully ready-to-play commands with no math needed at play time."""
+        """Compile code into fully ready-to-play commands with batching and deduplication."""
         ready_cmds = []
 
         # Determine scaling factors once
         scale_x = max(1, self.real_width // self.width)
         scale_y = max(1, self.real_height // self.height)
 
+        # Keep track of already plotted points
+        plotted_points = set()
+        batch = []
+
+        def flush_batch():
+            if batch:
+                # Convert batch of (x, y) tuples into a single PLOT command
+                coords = " ".join(f"{x} {y}" for x, y in batch)
+                ready_cmds.append({'cmd': 'PLOT', 'coords': coords})
+                batch.clear()
+
         for c in originalCompiled:
             if isinstance(c, dict) and 'cmd' in c:
                 if c['cmd'] == 'CLEAR':
+                    flush_batch()  # flush any pending PLOT batch before clearing
                     ready_cmds.append({'cmd': 'CLEAR'})
+                    plotted_points.clear()  # clear plotted points after a screen clear
                 elif c['cmd'] == 'PLOT':
                     base_x, base_y = c['x'], c['y']
-                    # Apply scaling here so play doesn't need to do it
+                    # Apply scaling
                     for dx in range(scale_x):
                         for dy in range(scale_y):
                             sx = base_x * scale_x + dx
                             sy = base_y * scale_y + dy
-                            ready_cmds.append({'cmd': 'PLOT', 'x': sx, 'y': sy})
+                            if (sx, sy) not in plotted_points:
+                                batch.append((sx, sy))
+                                plotted_points.add((sx, sy))
                 elif c['cmd'] == 'WAIT':
+                    flush_batch()  # flush any pending PLOT batch before waiting
                     ready_cmds.append({'cmd': 'WAIT', 'sec': c['sec']})
             else:
                 logging.warning("Unknown command format in compile: %s", c)
 
+        flush_batch()  # flush any remaining PLOT batch at the end
         return ready_cmds
-
     def compile(self, code, rotation=0, width=None, height=None):
         layer_one = self._compileLayerOne(code, rotation, width, height)
         layer_two = self._compileLayerTwo(layer_one)
@@ -745,10 +761,10 @@ class LEDLang:
             if c['cmd'] == 'CLEAR':
                 self.send('C')
             elif c['cmd'] == 'PLOT':
-                self.send(f"P {c['x']} {c['y']}")
+                # Send the whole batch of coordinates at once
+                self.send(f"P {c['coords']}")
             elif c['cmd'] == 'WAIT':
                 time.sleep(c['sec'])
-
 
     def get_letter_bitmap(self, char):
         base = FONT_5x5.get(char, FONT_5x5['.'])
