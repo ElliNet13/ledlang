@@ -495,7 +495,8 @@ class LEDLang:
             raise ValueError(f"File not compiled: {filename}")
         self.play(self.compiled[filename])
 
-    def compile(self, code, rotation=0, width=None, height=None):
+    def _compileLayerOne(self, code, rotation=0, width=None, height=None):
+        # This is the first layer of compilation, handling most commands but does not do some scaling
         cmds = []
         lines = code.strip().splitlines()
         i = 0
@@ -706,26 +707,48 @@ class LEDLang:
             i += 1
 
         return cmds
-    def play(self, obj):
-        cmds = obj
+    def _compileLayerTwo(self, originalCompiled):
+        """Compile code into fully ready-to-play commands with no math needed at play time."""
+        ready_cmds = []
+
+        # Determine scaling factors once
         scale_x = max(1, self.real_width // self.width)
         scale_y = max(1, self.real_height // self.height)
-        for c in cmds:
-            logging.debug("Sending command: %s", c)
+
+        for c in originalCompiled:
             if isinstance(c, dict) and 'cmd' in c:
                 if c['cmd'] == 'CLEAR':
-                    self.send('CLEAR')
+                    ready_cmds.append({'cmd': 'CLEAR'})
                 elif c['cmd'] == 'PLOT':
                     base_x, base_y = c['x'], c['y']
+                    # Apply scaling here so play doesn't need to do it
                     for dx in range(scale_x):
                         for dy in range(scale_y):
                             sx = base_x * scale_x + dx
                             sy = base_y * scale_y + dy
-                            self.send(f"PLOT {sx} {sy}")
+                            ready_cmds.append({'cmd': 'PLOT', 'x': sx, 'y': sy})
                 elif c['cmd'] == 'WAIT':
-                    time.sleep(c['sec'])
+                    ready_cmds.append({'cmd': 'WAIT', 'sec': c['sec']})
             else:
-                logging.warning("Unknown command format: %s", c)
+                logging.warning("Unknown command format in compile: %s", c)
+
+        return ready_cmds
+
+    def compile(self, code, rotation=0, width=None, height=None):
+        layer_one = self._compileLayerOne(code, rotation, width, height)
+        layer_two = self._compileLayerTwo(layer_one)
+        return layer_two
+
+    def play(self, cmds):
+        """Play commands literally—no scaling or math."""
+        for c in cmds:
+            if c['cmd'] == 'CLEAR':
+                self.send('CLEAR')
+            elif c['cmd'] == 'PLOT':
+                self.send(f"PLOT {c['x']} {c['y']}")
+            elif c['cmd'] == 'WAIT':
+                time.sleep(c['sec'])
+
 
     def get_letter_bitmap(self, char):
         base = FONT_5x5.get(char, FONT_5x5['.'])
