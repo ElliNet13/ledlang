@@ -11,8 +11,8 @@ LED Programming Language, mostly for controlling a Micro:bit but others can be u
 
 | Command  | What they do                    |
 |----------|---------------------------------|
-| PLOT     | Turn on a pixel on the screen   |
-| CLEAR    | Clear the screen                |
+| P (PLOT) | Turn on a pixel on the screen   |
+| C (CLEAR)| Clear the screen                |
 
 # Problems
 | Item     | Problem                                                                                        |
@@ -28,7 +28,6 @@ LED Programming Language, mostly for controlling a Micro:bit but others can be u
 |--------------------------------------------------------------|
 | Make plot be able to batch |
 | Use a local echo to know if a point is already drawn |
-| Use one letter for each command |
 
 [Github repo]({{githubRepoLink}})<br>
 Test Status for this: {{badgeForTests}}<br>

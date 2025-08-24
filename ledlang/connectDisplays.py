@@ -38,12 +38,12 @@ class SingleDisplayToMulti:
         parts = command.strip().split()
         cmd = parts[0].upper()
 
-        if cmd == "CLEAR":
+        if cmd == "C": # CLEAR
             for disp in self.displays["displays"]:
-                disp['serial'].write(b"CLEAR\n")
+                disp['serial'].write(b"C\n") # Send CLEAR
             return
 
-        if cmd == "PLOT":
+        if cmd == "P": # PLOT
             if len(parts) != 3:
                 return  # Invalid PLOT command format
 
@@ -71,7 +71,7 @@ class SingleDisplayToMulti:
             rx, ry = self.apply_rotation(local_x, y, rotation)
 
             # Compose and send command
-            send_str = f"PLOT {rx} {ry}\n"
+            send_str = f"P {rx} {ry}\n" # Send PLOT
             disp['serial'].write(send_str.encode('ascii'))
 
     def apply_rotation(self, x, y, rotation):

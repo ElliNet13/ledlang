@@ -743,9 +743,9 @@ class LEDLang:
         """Play commands literally—no scaling or math."""
         for c in cmds:
             if c['cmd'] == 'CLEAR':
-                self.send('CLEAR')
+                self.send('C')
             elif c['cmd'] == 'PLOT':
-                self.send(f"PLOT {c['x']} {c['y']}")
+                self.send(f"P {c['x']} {c['y']}")
             elif c['cmd'] == 'WAIT':
                 time.sleep(c['sec'])
 

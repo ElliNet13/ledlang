@@ -42,14 +42,14 @@ class PytestLEDDeviceSimulator:
             return
 
         cmd = parts[0].upper()
-        if cmd == "PLOT" and len(parts) == 3:
+        if cmd == "P" and len(parts) == 3: # PLOT
             try:
                 x, y = int(parts[1]), int(parts[2])
                 if 0 <= x < self.width and 0 <= y < self.height:
                     self.grid[y][x] = 1
             except ValueError:
                 pass
-        elif cmd == "CLEAR":
+        elif cmd == "C": # CLEAR
             self.grid = [[0 for _ in range(self.width)] for _ in range(self.height)]
 
     def kill(self):

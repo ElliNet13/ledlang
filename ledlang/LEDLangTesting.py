@@ -72,7 +72,7 @@ class LEDDeviceSimulator:
         if not parts:
             return
         cmd = parts[0].upper()
-        if cmd == 'PLOT' and len(parts) == 3:
+        if cmd == 'P' and len(parts) == 3: # PLOT
             try:
                 x = int(parts[1])
                 y = int(parts[2])
@@ -80,7 +80,7 @@ class LEDDeviceSimulator:
                 self.print_grid()
             except ValueError:
                 pass
-        elif cmd == 'CLEAR':
+        elif cmd == 'C': # CLEAR
             self.clear_grid()
             self.print_grid()
         else:

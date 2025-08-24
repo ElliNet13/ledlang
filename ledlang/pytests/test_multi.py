@@ -1,6 +1,3 @@
-import os
-import pty
-import serial
 import threading
 from ledlang import MultiLEDLang, PytestLEDDeviceSimulator
 
