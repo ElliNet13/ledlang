@@ -24,6 +24,14 @@ LED Programming Language, mostly for controlling a Micro:bit but others can be u
 |--------------|---------------------------------------------|
 | REALSIZE     | Can lag since division is used every PLOT   |
 
+# TODO
+| What I need to do                                            |
+|--------------------------------------------------------------|
+| Make a intermediate layer of compiling so the conpiled code will be correct and won't be changed by runtime stuff
+| Make plot be able to batch
+| Use a local echo to know if a point is already drawn
+| Use one letter for each command 
+
 [Github repo]({{githubRepoLink}})<br>
 Test Status for this: {{badgeForTests}}<br>
 [View this deploy]({{runLink}})
