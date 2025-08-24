@@ -1,8 +1,9 @@
 import os
 import pty
 import serial
+import argparse
 import threading
-
+from .core import LEDLang
 
 class PytestLEDDeviceSimulator:
     def __init__(self, size="5x5"):
@@ -56,3 +57,18 @@ class PytestLEDDeviceSimulator:
         if self.serial.is_open:
             self.serial.close()
         return self.grid
+
+
+def PyTestTesterCLI():
+    parser = argparse.ArgumentParser(description="LEDLang Tester for PyTest.")
+    parser.add_argument("--folder", help="Folder that contains the LEDLang files. Defaults to the libs tests folder.", default=os.path.abspath(os.path.dirname(__file__) + "/tests"))
+    parser.add_argument("animation", help="The file to play, without the .led extension.")
+    parser.add_argument("--size", help="The size of the grid to use (e.g., 5x5).", default="5x5")
+    args = parser.parse_args()
+    simulator = PytestLEDDeviceSimulator(args.size)
+    threading.Thread(target=simulator.run, daemon=True).start()
+    ledlang = LEDLang(serial_obj=simulator.serial)
+    ledlang.set_folder(args.folder)
+    ledlang.playfile(args.animation)
+    print("Place the following in tests")
+    print("assert simulator.kill() == " + str(simulator.kill()))
