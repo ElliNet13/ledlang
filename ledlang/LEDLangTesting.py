@@ -72,19 +72,28 @@ class LEDDeviceSimulator:
         if not parts:
             return
         cmd = parts[0].upper()
-        if cmd == 'P' and len(parts) == 3: # PLOT
+    
+        if cmd == 'P':  # PLOT batch
+            if (len(parts) - 1) % 2 != 0:
+                return  # Invalid number of coordinates
+    
             try:
-                x = int(parts[1])
-                y = int(parts[2])
-                self.set_pixel(x, y, 'RED')
-                self.print_grid()
+                coords = [(int(parts[i]), int(parts[i + 1])) for i in range(1, len(parts), 2)]
             except ValueError:
-                pass
-        elif cmd == 'C': # CLEAR
+                return  # Invalid number format
+    
+            for x, y in coords:
+                self.set_pixel(x, y, 'RED')
+            self.print_grid()  # Update grid after batch
+    
+        elif cmd == 'C':  # CLEAR
             self.clear_grid()
             self.print_grid()
+    
         else:
-            raise ValueError(f"Unknown command: {command}\nOn the real device, this would reset the device and return an error.")
+            raise ValueError(
+                f"Unknown command: {command}\nOn the real device, this would reset the device and return an error."
+            )
 
 def main():
     parser = argparse.ArgumentParser(description="LEDLang Tester.")

@@ -42,14 +42,20 @@ class PytestLEDDeviceSimulator:
             return
 
         cmd = parts[0].upper()
-        if cmd == "P" and len(parts) == 3: # PLOT
+        if cmd == "P":  # PLOT batch
+            if (len(parts) - 1) % 2 != 0:
+                return  # Invalid number of coordinates
+
             try:
-                x, y = int(parts[1]), int(parts[2])
-                if 0 <= x < self.width and 0 <= y < self.height:
-                    self.grid[y][x] = 1
+                coords = [(int(parts[i]), int(parts[i + 1])) for i in range(1, len(parts), 2)]
             except ValueError:
-                pass
-        elif cmd == "C": # CLEAR
+                return  # Invalid number format
+
+            for x, y in coords:
+                if 0 <= x < self.width and 0 <= y < self.height:
+                    self.grid[y][x] = 1  # Mark point plotted
+
+        elif cmd == "C":  # CLEAR
             self.grid = [[0 for _ in range(self.width)] for _ in range(self.height)]
 
     def kill(self):

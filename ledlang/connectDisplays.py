@@ -37,42 +37,42 @@ class SingleDisplayToMulti:
     def handle_command(self, command):
         parts = command.strip().split()
         cmd = parts[0].upper()
-
-        if cmd == "C": # CLEAR
+    
+        if cmd == "C":  # CLEAR
             for disp in self.displays["displays"]:
-                disp['serial'].write(b"C\n") # Send CLEAR
+                disp['serial'].write(b"C\n")  # Send CLEAR
             return
-
-        if cmd == "P": # PLOT
-            if len(parts) != 3:
-                return  # Invalid PLOT command format
-
+    
+        if cmd == "P":  # PLOT batch
+            if (len(parts) - 1) % 2 != 0:
+                return  # Invalid number of coordinates
+    
             try:
-                x = int(parts[1])
-                y = int(parts[2])
+                coords = [(int(parts[i]), int(parts[i + 1])) for i in range(1, len(parts), 2)]
             except ValueError:
-                return  # Invalid coordinates
-
-            # Check vertical bounds (y must fit display height)
-            if y < 0 or y >= self.height:
-                return  # y out of range
-
-            # Determine which display horizontally
-            display_index = x // self.width
-            local_x = x % self.width
-
-            if display_index >= len(self.displays["displays"]):
-                return  # x out of all displays range
-
-            disp = self.displays["displays"][display_index]
-            rotation = disp.get('rotation', 0) % 360  # Normalize rotation
-
-            # Apply rotation
-            rx, ry = self.apply_rotation(local_x, y, rotation)
-
-            # Compose and send command
-            send_str = f"P {rx} {ry}\n" # Send PLOT
-            disp['serial'].write(send_str.encode('ascii'))
+                return  # Invalid number format
+    
+            for x, y in coords:
+                # Check vertical bounds
+                if y < 0 or y >= self.height:
+                    continue  # Skip out-of-range y
+                
+                # Determine which display horizontally
+                display_index = x // self.width
+                local_x = x % self.width
+    
+                if display_index >= len(self.displays["displays"]):
+                    continue  # Skip out-of-range x
+                
+                disp = self.displays["displays"][display_index]
+                rotation = disp.get('rotation', 0) % 360
+    
+                # Apply rotation
+                rx, ry = self.apply_rotation(local_x, y, rotation)
+    
+                # Compose and send command
+                send_str = f"P {rx} {ry}\n"
+                disp['serial'].write(send_str.encode('ascii'))
 
     def apply_rotation(self, x, y, rotation):
         """
