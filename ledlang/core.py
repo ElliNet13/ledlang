@@ -710,46 +710,47 @@ class LEDLang:
     def _compileLayerTwo(self, originalCompiled):
         """Compile code into fully ready-to-play commands with batching and deduplication."""
         ready_cmds = []
-
-        # Determine scaling factors once
+    
         scale_x = max(1, self.real_width // self.width)
         scale_y = max(1, self.real_height // self.height)
-
-        # Keep track of already plotted points
+    
         plotted_points = set()
         batch = []
-
+    
         def flush_batch():
             if batch:
-                # Convert batch of (x, y) tuples into a single PLOT command
                 coords = " ".join(f"{x} {y}" for x, y in batch)
                 ready_cmds.append({'cmd': 'PLOT', 'coords': coords})
                 batch.clear()
-
+    
         for c in originalCompiled:
             if isinstance(c, dict) and 'cmd' in c:
                 if c['cmd'] == 'CLEAR':
-                    flush_batch()  # flush any pending PLOT batch before clearing
+                    flush_batch()
                     ready_cmds.append({'cmd': 'CLEAR'})
-                    plotted_points.clear()  # clear plotted points after a screen clear
+                    plotted_points.clear()
                 elif c['cmd'] == 'PLOT':
-                    base_x, base_y = c['x'], c['y']
-                    # Apply scaling
-                    for dx in range(scale_x):
-                        for dy in range(scale_y):
-                            sx = base_x * scale_x + dx
-                            sy = base_y * scale_y + dy
-                            if (sx, sy) not in plotted_points:
-                                batch.append((sx, sy))
-                                plotted_points.add((sx, sy))
+                    # Only process if it has 'x' and 'y'
+                    if 'x' in c and 'y' in c:
+                        base_x, base_y = c['x'], c['y']
+                        for dx in range(scale_x):
+                            for dy in range(scale_y):
+                                sx = base_x * scale_x + dx
+                                sy = base_y * scale_y + dy
+                                if (sx, sy) not in plotted_points:
+                                    batch.append((sx, sy))
+                                    plotted_points.add((sx, sy))
+                    else:
+                        logging.warning("Skipping PLOT without 'x'/'y': %s", c)
                 elif c['cmd'] == 'WAIT':
-                    flush_batch()  # flush any pending PLOT batch before waiting
+                    flush_batch()
                     ready_cmds.append({'cmd': 'WAIT', 'sec': c['sec']})
             else:
                 logging.warning("Unknown command format in compile: %s", c)
-
-        flush_batch()  # flush any remaining PLOT batch at the end
+    
+        flush_batch()
         return ready_cmds
+
     def compile(self, code, rotation=0, width=None, height=None):
         layer_one = self._compileLayerOne(code, rotation, width, height)
         layer_two = self._compileLayerTwo(layer_one)
