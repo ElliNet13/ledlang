@@ -6,10 +6,13 @@ import argparse
 from pathlib import Path
 from rich.console import Console
 from rich.text import Text
+import logging
+import subprocess
 
 console = Console()
 
-tests = os.path.abspath(os.path.dirname(__file__) + "/tests")
+ourdir = os.path.abspath(os.path.dirname(__file__))
+tests = os.path.abspath(ourdir + "/tests")
 
 def main():
     parser = argparse.ArgumentParser(description="LEDLang CLI Sender.")
@@ -18,7 +21,7 @@ def main():
     parser.add_argument("serial", type=Path, help="The serial port to connect to (e.g., /dev/ttyUSB0).")
     parser.add_argument("--baudrate", type=int, help="The baud rate to use (e.g., 115200).", default=115200)
     args = parser.parse_args()
-    args.serial = str(args.serial) 
+    args.serial = str(args.serial)
 
     with serial.Serial(args.serial, args.baudrate, timeout=1) as ser:
         print(f"Listening on {args.serial} at {args.baudrate} baud...")
@@ -26,6 +29,15 @@ def main():
         LED = LEDLang(ser)
         LED.set_folder(args.folder)
         LED.playfile(args.animation)
+
+        # Check serial output for errors
+        while True:
+            line = ser.readline().decode(errors="ignore").strip()
+            if not line:
+                continue
+            logging.info(line)
+            if line.startswith("Error:"):
+                raise RuntimeError(f"Received error from LEDLang: {line}")
 
 def list_files():
     """
@@ -46,3 +58,7 @@ def list_files():
     console.print(f"[bold green]Files in {tests_path.name}:[/bold green]")
     for filename in files:
         console.print(Text(filename, style="cyan"))
+
+def PyTestTestingCLI():
+    parser = argparse.ArgumentParser(description="Run LEDLang tests with PyTest.")
+    subprocess.run(["pytest"], cwd=ourdir + "/pytests")
