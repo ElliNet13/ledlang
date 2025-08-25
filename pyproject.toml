@@ -24,6 +24,7 @@ Helper = "https://ellinet13.github.io/to-the-serial/"
 ledlang-test = "ledlang.LEDLangTesting:main"
 ledlang-pytest = "ledlang.InternalTester:PyTestTesterCLI"
 ledlang = "ledlang.LEDSendCLI:main"
+ledlang-list = "ledlang.LEDSendCLI:list_files"
 
 [project.optional-dependencies]
 test = ["pytest"]
