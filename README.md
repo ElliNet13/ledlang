@@ -18,7 +18,7 @@ LED Programming Language, mostly for controlling a Micro:bit but others can be u
 | Item     | Problem                                                                                        |
 |----------|------------------------------------------------------------------------------------------------|
 | TEXT     | Only works if the height of your display is 5, you can get around this bug by using REALSIZE   |
-| TEXT     | Pretty buggy on a real device, I don't know why.                                               |
+| TEXT     | Pretty buggy on a real device (well at least the Micro:bit), I don't know why.                 |
 
 # Notes
 | Item         | Problem                                     |
